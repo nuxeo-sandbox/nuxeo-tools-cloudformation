@@ -1,0 +1,119 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+
+  "Description": "Nuxeo installation.",
+
+  "Parameters": {
+    "InstanceType": {
+      "Description": "Type of EC2 instance to launch",
+      "Type": "String",
+      "Default": "c3.large"
+    },
+    "KeyName": {
+      "Description": "Name of an existing EC2 KeyPair to enable SSH access to the instances",
+      "Type": "String"
+    }
+  },
+
+  "Mappings": {
+    "AWSInstanceType2Arch": {
+      "t1.micro"    : { "Arch": "64" },
+      "m1.small"    : { "Arch" : "64" },
+      "m1.large"    : { "Arch" : "64" },
+      "m1.xlarge"   : { "Arch" : "64" },
+      "m2.xlarge"   : { "Arch" : "64" },
+      "m2.2xlarge"  : { "Arch" : "64" },
+      "m2.4xlarge"  : { "Arch" : "64" },
+      "c1.medium"   : { "Arch" : "64" },
+      "c1.xlarge"   : { "Arch" : "64" },
+      "c1.4xlarge" : { "Arch" : "64" },
+      "c3.large"    : { "Arch" : "64" }
+    }, 
+    "AWSRegionArch2AMI": {
+      "us-west-1": {
+        "64": "ami-063aa838bd7631e0b"
+      },
+      "us-west-2": {
+        "64": "ami-0bbe6b35405ecebdb"
+      },
+      "us-east-1": {
+        "64": "ami-0ac019f4fcb7cb7e6"
+      },
+      "eu-west-1": {
+        "64": "ami-00035f41c82244dab"
+      },
+      "eu-central-1": {
+        "64": "ami-0bdf93799014acdc4"
+      },
+      "ap-northeast-1": {
+        "64": "ami-07ad4b1c3af1ea214"
+      },
+      "ap-southeast-1": {
+        "64": "ami-0c5199d385b432989"
+      },
+      "ap-southeast-2": {
+        "64": "ami-07a3bd4944eb120a0"
+      },
+      "sa-east-1": {
+        "64": "ami-03c6239555bb12112"
+      }
+    }
+  },
+
+  "Resources": {
+
+    "nuxeoinstance": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "InstanceType": { "Ref": "InstanceType" },
+        "SecurityGroups": [ { "Ref": "nuxeo" }, "default"  ],
+        "KeyName": { "Ref": "KeyName" },
+        "ImageId": { "Fn::FindInMap" : [ "AWSRegionArch2AMI", { "Ref": "AWS::Region" },
+                            { "Fn::FindInMap": [ "AWSInstanceType2Arch", { "Ref": "InstanceType" }, "Arch" ] } ] },
+        "UserData": { "Fn::Base64": "#!/bin/bash\n\nSCRIPT_TARGET=\"https://raw.githubusercontent.com/nuxeo-sandbox/nuxeo-tools-cloudformation/master/scripts/Nuxeo_single\"\napt-get update && apt-get install -q -y wget && wget -O /install_script.sh ${SCRIPT_TARGET}\n/bin/bash /install_script.sh" }
+    }
+    },
+
+    "nuxeoip": {
+      "Type": "AWS::EC2::EIP",
+      "Properties": {
+        "InstanceId": { "Ref" : "nuxeoinstance" }
+      }
+    },
+
+    "nuxeo": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Allow ports 22 (SSH) and 80/443 (HTTP/HTTPS)",
+        "SecurityGroupIngress": [ {
+          "IpProtocol": "tcp",
+          "FromPort": "22",
+          "ToPort": "22",
+          "CidrIp": "0.0.0.0/0"
+        },
+        {
+          "IpProtocol": "tcp",
+          "FromPort": "80",
+          "ToPort": "80",
+          "CidrIp": "0.0.0.0/0"
+        },
+        {
+          "IpProtocol": "tcp",
+          "FromPort": "443",
+          "ToPort": "443",
+          "CidrIp": "0.0.0.0/0"
+        } ]
+      }
+    }
+
+  },
+
+ "Outputs": {
+    "URL": {
+      "Value" : { "Fn::Join" : [ "", [ "http://", { "Ref" : "nuxeoip" }, "/" ]]},
+      "Description": "Nuxeo URL"
+    }
+  }
+
+}
+

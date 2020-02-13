@@ -220,4 +220,6 @@ pg_dropcluster --stop $(pg_lsclusters -h | grep main | awk '{print $1}') main
 #decrease nuxeo startup priority
 mv /etc/rc3.d/S*nuxeo /etc/rc3.d/S99nuxeo 
 
+service nuxeo start
+
 echo "Nuxeo Installation Script Complete" | tee -a ${INSTALL_LOG}

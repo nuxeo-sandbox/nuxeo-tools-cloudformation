@@ -1,5 +1,5 @@
 #!/bin/bash
 
-SCRIPT_TARGET="https://raw.githubusercontent.com/nuxeo-sandbox/nuxeo-tools-cloudformation/master/scripts/@@Nuxeo_single@@"
-apt-get update && apt-get install -q -y curl && curl -O /install_script -sSL ${SCRIPT_TARGET}
-/bin/bash /install_script
+SCRIPT_TARGET="https://raw.githubusercontent.com/nuxeo-sandbox/nuxeo-tools-cloudformation/master/scripts/Nuxeo_single"
+apt-get update && apt-get install -q -y wget && wget -O /install_script.sh ${SCRIPT_TARGET}
+/bin/bash /install_script.sh
