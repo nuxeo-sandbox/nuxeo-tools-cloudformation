@@ -1,7 +1,8 @@
 # Nuxeo templates for Amazon CloudFormation
 
-Those templates will deploy Nuxeo architectures on CloudFormation.
+These templates will deploy a single Nuxeo instance with CloudFormation.
 
+This Nuxeo environment is for demonstration and evaluation purposes only.  It is not intended to be used for Production.
 
 ## Templates list
 
@@ -10,7 +11,6 @@ Those templates will deploy Nuxeo architectures on CloudFormation.
 This will deploy a single EC2 instance containing Nuxeo, a PostgreSQL
 database and a Apache2 HTTP front-end.  
 An Elastic IP is associated with the instance.
-
 
 ## Repository structure
 
@@ -27,13 +27,10 @@ An Elastic IP is associated with the instance.
 - **build**: this puts everything together and uploads the final template
   and scripts on S3.
 
+## Operating System
 
-## AMIs
-
-We are using AMIs from [Alestic](http://alestic.com/).  
-The OS is Ubuntu 12.04 LTS (Precise Pangolin).  
-Those are EBS boot instances (ie not volatile).
-
+We are using the `runurl` tool from [Alestic](http://alestic.com/).  
+The OS is Ubuntu 18.04 LTS (Bionic).  
 
 ## About Nuxeo
 
@@ -45,4 +42,3 @@ Nuxeo provides a modular, extensible Java-based [open source software platform f
 [4]: http://www.nuxeo.com/en/products/case-management
 
 More information on: <http://www.nuxeo.com/>
-
