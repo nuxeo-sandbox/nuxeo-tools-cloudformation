@@ -1,4 +1,4 @@
-# Nuxeo templates for Amazon CloudFormation
+# Nuxeo Templates for Amazon CloudFormation
 
 These templates will deploy a single Nuxeo instance with CloudFormation.
 
@@ -32,7 +32,7 @@ An Elastic IP is associated with the instance.
 ## Operating System
 
 We are using the `wget` tool to retrieve the script from github.
-The OS is Ubuntu 18.04 LTS (Bionic). 
+The OS is Ubuntu 18.04 LTS (Bionic).
 
 ## Installation
 
