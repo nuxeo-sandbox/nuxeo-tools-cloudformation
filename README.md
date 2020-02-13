@@ -47,7 +47,7 @@ The OS is Ubuntu 18.04 LTS (Bionic).
 - Click `Create Stack`
 - The Outputs tab of the Stack status page will contain the assigned URL for the instance.
 - After approximately 5 minutes, a simple status page will appear with the text: "Please wait a few minutes for you instance installation to complete"
-- Refresh this page until the Nuxeo login page appears.  This may take up to 10 minutes.  See the next section to monitor the installation.
+- Refresh this page until the Nuxeo setup wizard page appears.  This may take up to 10 minutes.  See the next section to monitor the installation.
 
 ### Installation Monitoring
 
@@ -55,7 +55,7 @@ The OS is Ubuntu 18.04 LTS (Bionic).
   - `ssh ubuntu@IP_ADDRESS`
 - Monitor the script progress by tailing the installation log file:
   - `tail -F /var/log/nuxeo_install.log`
-- Once you see "Nuxeo Installation Script Complete", refresh the webpage and you should see the Nuxeo setup Wizard.
+- Once you see "Nuxeo Installation Script Complete", refresh the webpage and you should see the Nuxeo setup wizard.
 
 ## About Nuxeo
 
