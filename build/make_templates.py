@@ -1,6 +1,15 @@
 #!/usr/bin/env python
 
-import os, sys, time, string, re, shutil, json, boto, boto.s3.key
+import os, sys
+import argparse
+import time, string, re
+import json, shutil
+import boto, boto.s3.key
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--s3', action='store_true')
+args = parser.parse_args()
 
 # Local dirs
 TEMPLATES = "templates"
@@ -14,7 +23,7 @@ S3SCRIPTS = "scripts"
 S3BUCKET = "nuxeo"
 
 # Common pattern used for replacement
-nxvar = re.compile("@@([^@]*)@@")
+NXVAR = re.compile("@@([^@]*)@@")
 
 # Generate timestamp to use for published files versioning
 TS = time.strftime("%Y%m%d-%H%M%S")
@@ -35,7 +44,7 @@ tpllist = os.listdir(TEMPLATES)
 # Process each template
 for tpl in tpllist:
 
-    print "*** Template:", tpl
+    print("*** Template: %s" % tpl)
     tplfile = os.path.join(TEMPLATES, tpl)
     outfile = os.path.join(TARGET, S3TEMPLATES, tpl) # "latest"
     outfile_with_ts = outfile+"-"+TS
@@ -46,23 +55,22 @@ for tpl in tpllist:
     file.close()
 
     # Find the UserData script to use
-    udlist = nxvar.findall(tpldata)
+    udlist = NXVAR.findall(tpldata)
     if len(udlist) == 0:
-        print "No UserData script in template file - publish as is"
+        print("No UserData script in template file - publish as is")
         shutil.copyfile(tplfile, outfile)
         shutil.copyfile(outfile, outfile_with_ts)
     else:
         for ud in udlist:
-            print "UserData:", ud
+            print("UserData: %s" % outfile)
             udfile = os.path.join(USERDATA, ud)
             # Read the UserData script
             file = open(udfile, "r")
             uddata = file.read()
             file.close()
             # Find scripts called by the UserData one
-            slist = nxvar.findall(uddata)
+            slist = NXVAR.findall(uddata)
             for s in slist:
-                print "Script:", s
                 # Copy each timestamped script to publish dir
                 sfile = os.path.join(SCRIPTS, s)
                 outsfile_nots = os.path.join(TARGET, S3SCRIPTS, s)
@@ -70,21 +78,26 @@ for tpl in tpllist:
                 shutil.copyfile(sfile, outsfile_nots)
                 shutil.copyfile(sfile, outsfile)
                 # Replace filename in UserData
-                uddata = string.replace(uddata, "@@"+s+"@@", s+"-"+TS)
+                uddata = str.replace(uddata, "@@"+s+"@@", s+"-"+TS)
+                print("Script: %s" % outsfile_nots)
             # Encode UserData and replace in template
-            tpldata = string.replace(tpldata, "@@"+ud+"@@", json.dumps(uddata))
+            tpldata = str.replace(tpldata, "@@"+ud+"@@", json.dumps(uddata))
         # Write resulting template
         file = open(outfile, "w")
         file.write(tpldata)
         file.close()
         shutil.copyfile(outfile, outfile_with_ts)
 
+if not args.s3:
+    sys.exit(0)
+
 # Copy to S3
 try:
+    print("Uploading to S3.")
     s3 = boto.connect_s3()
 except:
-    print "Could not connect to S3 - are your credentials in the environment?"
-    sys.exit(-1)
+    print("Could not connect to S3 - are your credentials in the environment?")
+    sys.exit(1)
 
 try:
     bucket = s3.get_bucket(S3BUCKET)
@@ -98,20 +111,20 @@ def send_to_s3(bucket,key,filename):
     s3key.set_contents_from_filename(filename)
     s3key.set_acl("public-read")
 
-print "*** Uploading files:"
+print("*** Uploading files:")
 # Ensure scripts are available before templates
 for root, dirs, files in os.walk(os.path.join(TARGET, S3SCRIPTS)):
     for file in files:
         filename = os.path.join(root, file)
         relname = os.path.relpath(filename, TARGET)
-        print relname
+        print(relname)
         send_to_s3(bucket, relname, filename)
 # Scripts done, send templates
 for root, dirs, files in os.walk(os.path.join(TARGET, S3TEMPLATES)):
     for file in files:
         filename = os.path.join(root, file)
         relname = os.path.relpath(filename, TARGET)
-        print relname
+        print(relname)
         send_to_s3(bucket, relname, filename)
 
 # Don't close manually as it throws an error

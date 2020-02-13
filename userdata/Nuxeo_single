@@ -1,5 +1,5 @@
 #!/bin/bash
 
-add-apt-repository -y ppa:alestic/ppa && apt-get update && apt-get install -q -y runurl
-runurl https://raw.githubusercontent.com/nuxeo-sandbox/nuxeo-tools-cloudformation/master/scripts/Nuxeo_single
-
+SCRIPT_TARGET="https://raw.githubusercontent.com/nuxeo-sandbox/nuxeo-tools-cloudformation/master/scripts/@@Nuxeo_single@@"
+apt-get update && apt-get install -q -y curl && curl -O /install_script -sSL ${SCRIPT_TARGET}
+/bin/bash /install_script
