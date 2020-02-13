@@ -36,7 +36,8 @@ The OS is Ubuntu 18.04 LTS (Bionic).
 
 ## Installation
 
-- Download the `dist/Nuxeo.template` file to your local machine
+- Download the [dist/Nuxeo.template](https://raw.githubusercontent.com/nuxeo-sandbox/nuxeo-tools-cloudformation/master/dist/Nuxeo.template) file to your local machine (right-click & save)
+  - `wget -O Nuxeo.template https://raw.githubusercontent.com/nuxeo-sandbox/nuxeo-tools-cloudformation/master/dist/Nuxeo.template`
 - Create a new resources stack with [AWS CloudFormation](https://console.aws.amazon.com/cloudformation/home)
 - Upload the `Nuxeo.template` file.
 - Click `Next`
